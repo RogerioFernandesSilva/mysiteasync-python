@@ -34,3 +34,21 @@ com uma indentação incorreta em `http_call_async`: o bloco
 `async with httpx.AsyncClient()` tinha saído de dentro da função por engano
 (ficava no mesmo nível do `for`, quebrando a função). Isso foi corrigido em
 `core/views.py`.
+
+## Nova feature nesta branch: contador de tempo assíncrono
+
+| Rota                          | Tipo             | Descrição                                                                 |
+|-------------------------------|------------------|-----------------------------------------------------------------------------|
+| `/async-counter/`              | **async (novo)** | Conta de 1 a N segundos com `asyncio.sleep`, aguarda e retorna JSON no fim |
+| `/async-counter-background/`   | **async (novo)** | Mesmo contador, mas em background — resposta é imediata                    |
+
+Parâmetros de query aceitos: `?seconds=10` (padrão 5, máximo 30) e `?task_id=abc123`.
+
+Teste o não-bloqueio rodando em paralelo:
+
+```bash
+curl "http://127.0.0.1:8000/async-counter/?seconds=8"
+curl "http://127.0.0.1:8000/api/"
+```
+
+O `/api/` (síncrono) responde rápido mesmo com o contador assíncrono ainda rodando.
